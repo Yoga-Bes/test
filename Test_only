@@ -1,0 +1,77 @@
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.testng.Assert;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
+
+public class OnlyDigitalFooterTest {
+    WebDriver driver;
+    String baseUrl = "https://only.digital/";
+
+    @BeforeClass
+    public void setUp() {
+        System.setProperty("webdriver.chrome.driver", "path/to/chromedriver");
+        driver = new ChromeDriver();
+        driver.manage().window().maximize();
+        driver.get(baseUrl);
+    }
+
+    @Test(priority = 1)
+
+    public void testFooterPresence() {
+        WebElement footer = driver.findElement(By.cssSelector("footer.Footer_root___6Q28"));
+        Assert.assertTrue(footer.isDisplayed(), "Футер не отображается");
+    }
+
+    @Test(priority = 2)
+
+    public void testKeyElements() {
+
+        // 1. Проверка кнопки "Начать проект"
+
+        WebElement startProjectBtn = driver.findElement(By.cssSelector("footer .Footer_button__RHd0Q"));
+        Assert.assertTrue(startProjectBtn.isDisplayed(), "Кнопка 'Начать проект' отсутствует");
+        Assert.assertEquals(startProjectBtn.getText(), "Начать проект");
+
+        // 2. Проверка соцсетей
+
+        String[] socialLinks = {
+            "https://www.behance.net/onlydigitalagency",
+            "https://t.me/onlycreativedigitalagency",
+            "https://vk.com/onlydigitalagency"
+        } ;
+        
+        for (String link : socialLinks) {
+            WebElement socialIcon = driver.findElement(By.cssSelector(
+                String.format("footer a[href='%s']", link));
+            Assert.assertTrue(socialIcon.isDisplayed(), "Иконка соцсети не найдена: " + link);
+        }
+
+        // 3. Проверка контактов
+
+        Assert.assertTrue(driver.findElement(By.cssSelector("footer a[href^='mailto:']")).isDisplayed();
+        Assert.assertTrue(driver.findElement(By.cssSelector("footer a[href^='tel:']")).isDisplayed();
+
+        // 4. Проверка политики конфиденциальности
+
+        WebElement privacyPolicy = driver.findElement(By.cssSelector("footer a[href*='Политика_конфиденциальности']"));
+        Assert.assertTrue(privacyPolicy.isDisplayed(), "Ссылка на политику конфиденциальности отсутствует");
+    }
+
+    @Test(priority = 3)
+
+    public void testCopyright() {
+        WebElement copyright = driver.findElement(By.cssSelector("footer .Footer_year__nyNCc"));
+        Assert.assertTrue(copyright.getText().contains("2025"), "Неверный год в копирайте");
+    }
+
+    @AfterClass
+    public void tearDown() {
+        if (driver != null) {
+            driver.quit();
+        }
+    }
+}
